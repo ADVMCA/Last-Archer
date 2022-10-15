@@ -1,6 +1,7 @@
 import pygame
 import os
 import random
+import threading
 
 pygame.font.init()
 
@@ -59,8 +60,19 @@ class Objects:
 
     def get_height(self):
         return self.object_img.get_height()
+import threading
 
+class MiHilo(threading.Thread):
 
+    def __init__(self,x):
+        self.__x = x
+        threading.Thread.__init__(self)
+
+    def run (self):  
+          print(str(self.__x))
+
+for i in range(10):
+    MiHilo(i).start()
 class Player(Objects):
     def __init__(self, x, y):
         super().__init__(x, y)
