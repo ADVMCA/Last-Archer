@@ -2,6 +2,8 @@ import pygame
 import os
 import random
 import threading
+import Player
+import Enemy
 
 pygame.font.init()
 
@@ -9,58 +11,7 @@ WIDTH, HEIGHT = 950, 750
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("LAST ARCHER")
 
-ENEMY = pygame.image.load(os.path.join("images", "Enemy.png"))
-
-ARCHER = pygame.image.load(os.path.join("images", "Archer.png"))
-
-ARROW_ARCHER = pygame.image.load(os.path.join("images", "Arrow_archer.png"))
-
 BG = pygame.transform.scale(pygame.image.load(os.path.join("images", "Battle.png")), (WIDTH, HEIGHT))
-
-
-class Objects:
-    COOLDOWN = 30
-
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.object_img = None
-        self.arrow_img = None
-        self.arrows = []
-        self.cool_down_counter = 0
-
-    def draw(self, window):
-        window.blit(self.object_img, (self.x, self.y))
-        for arrow in self.arrows:
-            arrow.draw(window)
-
-    def move_arrows(self, vel, obj):
-        self.cooldown()
-        for arrow in self.arrows:
-            arrow.move(vel)
-            if arrow.off_screen(HEIGHT):
-                self.arrows.remove(arrow)
-            elif arrow.collision(obj):
-                self.arrows.remove(arrow)
-
-    def cooldown(self):
-        if self.cool_down_counter >= self.COOLDOWN:
-            self.cool_down_counter = 0
-        elif self.cool_down_counter > 0:
-            self.cool_down_counter += 9
-
-    def shoot(self):
-        if self.cool_down_counter == 0:
-            arrow = Arrow(self.x, self.y, self.arrow_img)
-            self.arrows.append(arrow)
-            self.cool_down_counter = 1
-
-    def get_width(self):
-        return self.object_img.get_width()
-
-    def get_height(self):
-        return self.object_img.get_height()
-import threading
 
 class MiHilo(threading.Thread):
 
@@ -73,67 +24,11 @@ class MiHilo(threading.Thread):
 
 for i in range(10):
     MiHilo(i).start()
-class Player(Objects):
-    def __init__(self, x, y):
-        super().__init__(x, y)
-        self.object_img = ARCHER
-        self.arrow_img = ARROW_ARCHER
-        self.mask = pygame.mask.from_surface(self.object_img)
-
-    def move_arrows(self, vel, objs):
-        self.cooldown()
-        for arrow in self.arrows:
-            arrow.move(vel)
-            if arrow.off_screen(HEIGHT):
-                self.arrows.remove(arrow)
-            else:
-                for obj in objs:
-                    if arrow.collision(obj):
-                        objs.remove(obj)
-                        if arrow in self.arrows:
-                            self.arrows.remove(arrow)
-
-    def draw(self, window):
-        super().draw(window)
-
-class Arrow:
-    def __init__(self, x, y, img):
-        self.x = x
-        self.y = y
-        self.img = img
-        self.mask = pygame.mask.from_surface(self.img)
-
-    def draw(self, window):
-        window.blit(self.img, (self.x, self.y))
-
-    def move(self, vel):
-        self.y += vel
-
-    def off_screen(self, height):
-        return not (self.y <= height and self.y >= 0)
-
-    def collision(self, obj):
-        return collide(self, obj)
-
 
 def collide(obj1, obj2):
     offset_x = obj2.x - obj1.x
     offset_y = obj2.y - obj1.y
     return obj1.mask.overlap(obj2.mask, (offset_x, offset_y)) != None
-
-
-class Enemy(Objects):
-    COLOR_MAP = {
-        "red": (ENEMY)
-    }
-
-    def __init__(self, x, y, color):
-        super().__init__(x, y)
-        self.object_img = self.COLOR_MAP[color]
-        self.mask = pygame.mask.from_surface(self.object_img)
-
-    def move(self, vel):
-        self.y += vel
 
 
 def main():
@@ -151,7 +46,7 @@ def main():
     archer_vel = 5
     arrow_vel = 10
 
-    archer = Player(300, 630)
+    archer = Player.Player(300, 630)
 
     clock = pygame.time.Clock()
 
@@ -195,7 +90,7 @@ def main():
             level += 1
             wave_length += 5
             for i in range(wave_length):
-                enemy = Enemy(random.randrange(50, WIDTH - 100), random.randrange(-1500, -100), random.choice(["red"]))
+                enemy = Enemy.Enemy(random.randrange(50, WIDTH - 100), random.randrange(-1500, -100), random.choice(["red"]))
                 enemies.append(enemy)
 
         for event in pygame.event.get():
