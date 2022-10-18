@@ -4,8 +4,8 @@ import sys
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-server = 'localhost'
-port = 5555
+server = '192.168.20.100'
+port = 8080
 
 server_ip = socket.gethostbyname(server)
 
@@ -53,6 +53,6 @@ def threaded_client(conn):
 
 while True:
     conn, addr = s.accept()
-    print("Connected to: ", addr)
+    print("Conectado a: ", addr)
 
     start_new_thread(threaded_client, (conn,))

@@ -4,14 +4,10 @@ import random
 import threading
 import Player
 import Enemy
-import socket
 from network import Network
 
-host = "192.168.20.145"
+host = "192.168.20.100"
 port = 8080
-
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    pass
 
 pygame.font.init()
 
@@ -40,7 +36,6 @@ def collide(obj1, obj2):
 
 
 def main():
-    net = Network()
     run = True
     FPS = 60
     level = 0
@@ -55,11 +50,26 @@ def main():
     arrow_vel = 10
 
     archer = Player.Player(300, 630)
+    archer2 = Player.Player(390, 630)
 
     clock = pygame.time.Clock()
 
     lost = False
     lost_count = 0
+
+    net = Network()
+
+    def send_data():
+        data = str(net.id) + ":" + str(archer.x)
+        reply = net.send(data)
+        return reply
+    
+    def parse_data(data):
+        try:
+            d = data.split(":")
+            return int(d[0])
+        except:
+            return 0,0
 
     def redraw_window():
         WIN.blit(BG, (0, 0))
@@ -73,6 +83,7 @@ def main():
             enemy.draw(WIN)
 
         archer.draw(WIN)
+        archer2.draw(WIN)
 
         if lost:
             lost_label = lost_font.render("GAME OVER", 1, (255, 255, 255))
@@ -113,6 +124,8 @@ def main():
         if keys[pygame.K_SPACE]:
             archer.shoot()
 
+        archer2.x = parse_data(send_data())
+
         for enemy in enemies[:]:
             enemy.move(enemy_vel)
 
@@ -123,23 +136,6 @@ def main():
                 enemies.remove(enemy)
 
         archer.move_arrows(-arrow_vel, enemies)
-
-    def send_data(self):
-        """
-        Send position to server
-        :return: None
-        """
-        data = str(self.net.id) + ":" + str(self.player.x) + "," + str(self.player.y)
-        reply = self.net.send(data)
-        return reply
-
-    @staticmethod
-    def parse_data(data):
-        try:
-            d = data.split(":")[1].split(",")
-            return int(d[0]), int(d[1])
-        except:
-            return 0,0
 
 
 def titleScreen():
