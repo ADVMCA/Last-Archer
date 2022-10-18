@@ -4,6 +4,14 @@ import random
 import threading
 import Player
 import Enemy
+import socket
+from network import Network
+
+host = "192.168.20.145"
+port = 8080
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    pass
 
 pygame.font.init()
 
@@ -32,11 +40,11 @@ def collide(obj1, obj2):
 
 
 def main():
+    net = Network()
     run = True
     FPS = 60
     level = 0
     lives = 5
-    main_font = pygame.font.SysFont("arial", 50)
     lost_font = pygame.font.SysFont("arial", 60)
 
     enemies = []
@@ -115,6 +123,23 @@ def main():
                 enemies.remove(enemy)
 
         archer.move_arrows(-arrow_vel, enemies)
+
+    def send_data(self):
+        """
+        Send position to server
+        :return: None
+        """
+        data = str(self.net.id) + ":" + str(self.player.x) + "," + str(self.player.y)
+        reply = self.net.send(data)
+        return reply
+
+    @staticmethod
+    def parse_data(data):
+        try:
+            d = data.split(":")[1].split(",")
+            return int(d[0]), int(d[1])
+        except:
+            return 0,0
 
 
 def titleScreen():

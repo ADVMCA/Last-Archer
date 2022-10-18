@@ -18,7 +18,7 @@ class Objects:
 
     def move_arrows(self, vel, obj):
         self.cooldown()
-        WIDTH, HEIGHT = 950, 750
+        HEIGHT = 750
         for arrow in self.arrows:
             arrow.move(vel)
             if arrow.off_screen(HEIGHT):
