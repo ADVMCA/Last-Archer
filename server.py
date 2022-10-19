@@ -5,7 +5,7 @@ import sys
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 server = '192.168.20.100'
-port = 8080
+port = 5555
 
 server_ip = socket.gethostbyname(server)
 
@@ -23,7 +23,7 @@ pos = ["0:50,50", "1:100,100"]
 def threaded_client(conn):
     global currentId, pos
     conn.send(str.encode(currentId))
-    currentId = "1"
+    currentId = "0"
     reply = ''
     while True:
         try:

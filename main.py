@@ -6,9 +6,6 @@ import Player
 import Enemy
 from network import Network
 
-host = "192.168.20.100"
-port = 8080
-
 pygame.font.init()
 
 WIDTH, HEIGHT = 950, 750
@@ -67,9 +64,10 @@ def main():
     def parse_data(data):
         try:
             d = data.split(":")
-            return int(d[0])
+            print(int(d[1]))
+            return int(d[1])
         except:
-            return 0,0
+            return 0
 
     def redraw_window():
         WIN.blit(BG, (0, 0))
@@ -125,6 +123,7 @@ def main():
             archer.shoot()
 
         archer2.x = parse_data(send_data())
+        archer2.y = 630
 
         for enemy in enemies[:]:
             enemy.move(enemy_vel)
