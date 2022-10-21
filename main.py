@@ -40,6 +40,7 @@ def main():
     lost_font = pygame.font.SysFont("arial", 60)
 
     enemies = []
+    enemies2 = []
     wave_length = 5
     enemy_vel = 2
 
@@ -56,18 +57,11 @@ def main():
 
     net = Network()
 
-    def send_data():
-        data = str(net.id) + ":" + str(archer.x)
-        reply = net.send(data)
-        return reply
-    
-    def parse_data(data):
-        try:
-            d = data.split(":")
-            print(int(d[1]))
-            return int(d[1])
-        except:
-            return 0
+    data = [enemies, archer]
+
+    def send_data(list):
+        data = net.send(list)
+        return data
 
     def redraw_window():
         WIN.blit(BG, (0, 0))
@@ -122,8 +116,7 @@ def main():
         if keys[pygame.K_SPACE]:
             archer.shoot()
 
-        archer2.x = parse_data(send_data())
-        archer2.y = 630
+        enemies2, archer2 = send_data(data)
 
         for enemy in enemies[:]:
             enemy.move(enemy_vel)
@@ -134,7 +127,17 @@ def main():
                 lives -= 1
                 enemies.remove(enemy)
 
+        for enemy in enemies2[:]:
+            enemy.move(enemy_vel)
+
+            if collide(enemy, archer):
+                enemies.remove(enemy)
+            elif enemy.y + enemy.get_height() > HEIGHT:
+                lives -= 1
+                enemies.remove(enemy)
+
         archer.move_arrows(-arrow_vel, enemies)
+        archer2.move_arrows(-arrow_vel, enemies)
 
 
 def titleScreen():
