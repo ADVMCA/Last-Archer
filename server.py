@@ -28,23 +28,12 @@ def threaded_client(conn):
     while True:
         try:
             data = conn.recv(2048)
-            reply = data.decode('utf-8')
             if not data:
                 conn.send(str.encode("Bye Bye"))
                 break
             else:
                 print("Recieved: " + reply)
-                arr = reply.split(":")
-                id = int(arr[0])
-                pos[id] = reply
-
-                if id == 0: nid = 1
-                if id == 1: nid = 0
-
-                reply = pos[nid][:]
-                print("Sending: " + reply)
-
-            conn.sendall(str.encode(reply))
+            conn.sendall(reply)
         except:
             break
 
